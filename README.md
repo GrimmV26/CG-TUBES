@@ -5,21 +5,6 @@ Dunia 3D kecil yang berjalan di browser, dibuat dengan **Three.js r160** (WebGL)
 Trinity General School dari Blue Archive: kapel gotik, plaza marmer, air mancur, taman mawar, dan meja teh.
 Semua model dirakit dari bentuk dasar Three.js; tidak ada aset resmi game yang dipakai.
 
-
-## Cara menjalankan
-
-Halaman memakai modul JavaScript, jadi **tidak bisa** dibuka dengan klik dua kali `index.html`. Pilih salah satu:
-
-```bash
-# Python (sudah ada di kebanyakan komputer)
-python -m http.server 8000      # lalu buka http://localhost:8000
-
-# atau Node.js
-npx serve .
-```
-atau pakai ekstensi **Live Server** di VS Code (klik kanan `index.html` → *Open with Live Server*).
-Three.js sudah disimpan lokal di `libs/`, jadi tidak butuh internet.
-
 ## Kontrol
 
 | Aksi | Cara |
@@ -34,20 +19,6 @@ Three.js sudah disimpan lokal di `libs/`, jadi tidak butuh internet.
 | Shading | Standar, Phong, Flat, Toon, Kerangka (wireframe) |
 | Lampu taman / air mancur | klik ganda untuk nyala-mati |
 | Batal pilih | **Esc** |
-
-## Pemetaan syarat tugas → kode
-
-| Syarat | Dipenuhi oleh | Berkas |
-| --- | --- | --- |
-| ≥ 5 benda 3D + lantai + dinding/batas | 23 benda interaktif, lantai marmer, dinding & pagar | `js/objek/*.js` (benda), `js/latar/*.js` (lantai, dinding, pagar, kapel), dirangkai di `js/objects.js` |
-| Posisi, rotasi, skala (button atau mouse) | `TransformControls` + slider + tombol | `js/interaction.js`, `js/ui/objek.js` |
-| Kamera orbit (OrbitControls) | rotasi & zoom mouse | `js/camera.js` |
-| 2 tombol sudut pandang tetap | Tampak depan, Tampak atas | `js/camera.js` (`SUDUT`), `js/ui/kamera.js` |
-| Slider intensitas & warna cahaya | cahaya utama, ambient, lampu taman | `js/lighting.js`, `js/ui/cahaya.js` |
-| Tombol siang/malam | transisi halus ke preset | `js/lighting.js` (`PRESET`) |
-| ≥ 1 tekstur foto anggota | Papan Kenangan | `js/tekstur/foto.js` (`muatFoto`), `js/objek/papanfoto.js` (`buatPapanFoto`), `js/config.js` |
-
-Tambahan di luar syarat: proyeksi ortografik, 5 mode shading, bayangan, kabut, interaksi klik ganda.
 
 ## Struktur proyek
 
@@ -98,51 +69,3 @@ Latar statis (tidak bisa dipilih): `js/latar/tanah.js`, `plaza.js`, `dinding.js`
 (titik asal = pusat dasar benda), impor di `js/penempatan/set-teh.js` atau `taman.js`, lalu daftarkan dengan
 `daftar('id', 'Nama di panel', buatXxx(ctx), x, z)`. `ctx` berisi material bersama (`ctx.mat`) dan daftar lampu/kaca/foto.
 Untuk memindahkan posisi awal benda, cukup ubah angka x / z di file penempatan.
-
-## Pembagian kerja per file (3 anggota)
-
-Satu file = satu pemilik. Perubahan di file orang lain lewat Pull Request atau minta pemiliknya.
-
-| | Anggota 1: Dunia & kamera | Anggota 2: Set teh & interaksi | Anggota 3: Taman & cahaya |
-| --- | --- | --- | --- |
-| Benda | semua `js/latar/*` | `meja`, `kursi`, `kue`, `teko`, `cangkir`, `bangku` | `lampu`, `airmancur`, `mawar`, `pohon`, `papanfoto` |
-| Sistem | `camera.js`, `objects.js`, `langit.js`, `objek/bantu.js`, `objek/bahan.js` | `interaction.js`, `shading.js`, `main.js` | `lighting.js`, `config.js` |
-| Panel | `ui.js`, `ui/bantu.js`, `ui/kamera.js` | `ui/objek.js` | `ui/cahaya.js` |
-| Tekstur | `tekstur/bangunan.js` | `textures.js`, `tekstur/dasar.js`, `set-teh.js`, `kaca-kapel.js` | `tekstur/foto.js` |
-| Lainnya | | `penempatan/set-teh.js` | `penempatan/taman.js`, `index.html`, `css/style.css`, `README.md` |
-
-## Mengganti foto anggota
-
-1. Simpan foto asli di `assets/foto/` (JPG atau PNG, rasio bebas; otomatis di-crop ke bingkai 3:4).
-2. Sesuaikan nama file dan nama anggota di `js/config.js`:
-   ```js
-   export const ANGGOTA = [
-     { nama: 'Budi Santoso', foto: 'assets/foto/budi.jpg' },
-     // ...
-   ];
-   ```
-3. Muat ulang halaman. Jika file tidak ditemukan, papan memakai gambar pengganti dan konsol browser menampilkan peringatan.
-
-## Mengunggah ke GitHub & membuat website
-
-1. Buat repositori baru di GitHub (mis. `trinity-3d-world`), lalu di folder proyek:
-   ```bash
-   git init
-   git add .
-   git commit -m "Dunia 3D Trinity: versi awal"
-   git branch -M main
-   git remote add origin https://github.com/<username>/trinity-3d-world.git
-   git push -u origin main
-   ```
-2. **Dosen sebagai kolaborator:** repositori → *Settings* → *Collaborators* → *Add people* → isi username GitHub dosen.
-3. **Website:** repositori → *Settings* → *Pages* → *Build and deployment* → *Deploy from a branch* → `main` / `(root)` → *Save*.
-   Alamatnya akan muncul sekitar 1–2 menit kemudian: `https://<username>.github.io/trinity-3d-world/`.
-4. **Kontribusi tiap anggota dinilai.** Setiap anggota sebaiknya meng-*clone* repositori, bekerja di berkas bagiannya, dan
-   *commit* dari akunnya sendiri (`git config user.name` dan `user.email` harus sesuai akun GitHub masing-masing).
-   Kode sudah dipisah per modul supaya pembagian kerja mudah; contoh pembagian ada di laporan.
-
-## Catatan teknis
-
-- Dibutuhkan browser dengan **WebGL2** (Chrome, Edge, Firefox, Safari terbaru).
-- Three.js r160 berlisensi MIT (`libs/three/LICENSE`).
-- Untuk pengujian, objek `window.__dunia` tersedia di konsol browser (scene, kamera, cahaya, daftar objek).
