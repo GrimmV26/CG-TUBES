@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teras Tea Party</title>
+  <meta name="description" content="Dunia 3D interaktif bertema Trinity Tea Terrace">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./libs/three/three.module.js",
+      "three/addons/": "./libs/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="kanvas" aria-label="Dunia 3D Trinity General School"></canvas>
+
+  <div id="memuat" class="memuat"><div><div class="spinner"></div><p>Menyiapkan teras Tea Party…</p></div></div>
+  <div id="galat" class="galat" hidden></div>
+
+  <div id="tip" class="tip" hidden></div>
+  <div id="fps" class="fps">— fps</div>
+
+  <button id="btn-buka" class="btn-buka" hidden aria-label="Tampilkan panel">☰ Panel</button>
+
+  <aside id="panel" class="panel">
+    <header class="panel-head">
+      <div>
+        <h1>Trinity Tea Party Terrace</h1>
+        <p class="sub">Teras Tea Party</p>
+        <p class="grup" id="grup"></p>
+      </div>
+      <button id="btn-tutup" class="ikon" aria-label="Sembunyikan panel">×</button>
+    </header>
+
+    <div class="isi">
+
+      <details class="bagian" open>
+        <summary>Kamera &amp; proyeksi</summary>
+        <div class="grid3">
+          <button data-sudut="depan">Tampak depan</button>
+          <button data-sudut="atas">Tampak atas</button>
+          <button data-sudut="bebas" class="aktif">Bebas</button>
+        </div>
+        <div class="segmen" role="group" aria-label="Jenis proyeksi">
+          <button data-proyeksi="persp" class="aktif">Perspektif</button>
+          <button data-proyeksi="ortho">Ortografik</button>
+        </div>
+        <div id="s-kamera"></div>
+        <p class="catatan">Klik kiri + seret = putar · klik kanan + seret = geser · scroll = zoom.</p>
+      </details>
+
+      <details class="bagian" open>
+        <summary>Pencahayaan</summary>
+        <div class="segmen" role="group" aria-label="Mode waktu">
+          <button data-mode="siang" class="aktif">☀ Siang</button>
+          <button data-mode="malam">☾ Malam</button>
+        </div>
+        <div id="s-cahaya"></div>
+      </details>
+
+      <details class="bagian">
+        <summary>Shading &amp; tampilan</summary>
+        <div class="radio-grup" id="shading">
+          <label><input type="radio" name="shading" value="standar" checked><span><b>Standar</b> <i>PBR, halus</i></span></label>
+          <label><input type="radio" name="shading" value="phong"><span><b>Phong</b> <i>ambient + diffuse + specular</i></span></label>
+          <label><input type="radio" name="shading" value="flat"><span><b>Flat</b> <i>satu warna per segitiga</i></span></label>
+          <label><input type="radio" name="shading" value="toon"><span><b>Toon</b> <i>3 tingkat terang</i></span></label>
+          <label><input type="radio" name="shading" value="kerangka"><span><b>Kerangka</b> <i>wireframe</i></span></label>
+        </div>
+        <label class="cek"><input type="checkbox" id="cb-bayangan" checked> Bayangan (shadow map)</label>
+        <label class="cek"><input type="checkbox" id="cb-kabut" checked> Kabut jarak jauh</label>
+        <label class="cek"><input type="checkbox" id="cb-air" checked> Air mancur menyala</label>
+        <label class="cek"><input type="checkbox" id="cb-sumbu"> Tampilkan sumbu &amp; grid <span class="warna-sumbu"><i style="background:#e5484d">X</i><i style="background:#30a46c">Y</i><i style="background:#3e63dd">Z</i></span></label>
+      </details>
+
+      <details class="bagian" open id="b-objek">
+        <summary>Objek &amp; transformasi</summary>
+        <label class="pilih">
+          <span>Objek terpilih</span>
+          <select id="pilih-objek"></select>
+        </label>
+        <p class="catatan" id="info-pilih">Klik sebuah benda di adegan, atau pilih dari daftar.</p>
+
+        <div class="segmen tiga" role="group" aria-label="Mode gizmo mouse">
+          <button data-gizmo="translate" class="aktif">Geser <kbd>W</kbd></button>
+          <button data-gizmo="rotate">Putar <kbd>E</kbd></button>
+          <button data-gizmo="scale">Skala <kbd>R</kbd></button>
+        </div>
+        <div class="dua-cek">
+          <label class="cek"><input type="checkbox" id="cb-snap"> Snap</label>
+          <label class="cek"><input type="checkbox" id="cb-lokal"> Sumbu lokal</label>
+        </div>
+
+        <h3>Tombol cepat</h3>
+        <div class="tombol-cepat" id="cepat">
+          <button data-g="x,-0.5">X −</button><button data-g="x,0.5">X +</button>
+          <button data-g="y,-0.25">Turun</button><button data-g="y,0.25">Naik</button>
+          <button data-g="z,-0.5">Z −</button><button data-g="z,0.5">Z +</button>
+          <button data-r="-15">⟲ 15°</button><button data-r="15">⟳ 15°</button>
+          <button data-k="0.9">Skala −</button><button data-k="1.1">Skala +</button>
+        </div>
+
+        <h3>Posisi</h3><div id="s-pos"></div>
+        <h3>Rotasi (derajat)</h3><div id="s-rot"></div>
+        <h3>Skala</h3>
+        <label class="cek"><input type="checkbox" id="cb-kunci" checked> Kunci proporsi</label>
+        <div id="s-skala"></div>
+
+        <div class="grid2">
+          <button id="btn-reset-objek">Reset objek</button>
+          <button id="btn-reset-semua">Reset semua</button>
+        </div>
+      </details>
+
+      <p class="kaki">Klik ganda lampu taman = nyala/mati · klik ganda air mancur = hidup/mati · <kbd>Esc</kbd> batal pilih.</p>
+    </div>
+  </aside>
+
+  <script type="module" src="js/main.js"></script>
+  <script>
+    if (location.protocol === 'file:') {
+      const g = document.getElementById('galat');
+      g.hidden = false;
+      g.innerHTML = '<h2>Buka lewat server lokal</h2><p>Halaman ini memakai modul JavaScript sehingga tidak bisa dibuka dengan klik dua kali <code>index.html</code>.</p><p>Jalankan <code>python -m http.server 8000</code> di folder proyek lalu buka <code>http://localhost:8000</code>, atau pakai ekstensi <b>Live Server</b> di VS Code, atau buka versi GitHub Pages.</p>';
+      document.getElementById('memuat').hidden = true;
+    }
+  </script>
+</body>
+</html>
